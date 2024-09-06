@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\SpeciesRepository;
+use App\Repository\BehaviorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: SpeciesRepository::class)]
-class Species
+#[ORM\Entity(repositoryClass: BehaviorRepository::class)]
+class Behavior
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,7 +21,7 @@ class Species
     /**
      * @var Collection<int, Pet>
      */
-    #[ORM\OneToMany(targetEntity: Pet::class, mappedBy: 'species')]
+    #[ORM\ManyToMany(targetEntity: Pet::class, mappedBy: 'behavior')]
     private Collection $pets;
 
     public function __construct()
@@ -58,7 +58,7 @@ class Species
     {
         if (!$this->pets->contains($pet)) {
             $this->pets->add($pet);
-            $pet->setSpecies($this);
+            $pet->addBehavior($this);
         }
 
         return $this;
@@ -67,10 +67,7 @@ class Species
     public function removePet(Pet $pet): static
     {
         if ($this->pets->removeElement($pet)) {
-            // set the owning side to null (unless already changed)
-            if ($pet->getSpecies() === $this) {
-                $pet->setSpecies(null);
-            }
+            $pet->removeBehavior($this);
         }
 
         return $this;

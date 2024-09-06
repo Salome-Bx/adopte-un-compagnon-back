@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\PetRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PetRepository::class)]
 class Pet
@@ -14,47 +17,91 @@ class Pet
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $birthyear = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\Column(length: 255)]
     private ?string $gender = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\Column(length: 255)]
     private ?string $quickDescription = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\Column]
     private ?bool $getAlongCats = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\Column]
     private ?bool $getAlongDogs = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\Column]
     private ?bool $getAlongChildren = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $entryDate = null;
 
+    
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $registerDate = null;
 
+    
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updateDate = null;
-
+    
+    #[Groups(['api_pets'])]
     #[ORM\Column]
     private ?bool $sos = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\Column(length: 255)]
     private ?string $race = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $categorisedDog = null;
+
+    #[Groups(['api_pets'])]
+    #[ORM\Column(length: 255)]
+    private ?string $image = null;
+
+    #[ORM\ManyToOne(inversedBy: 'pets')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?species $species = null;
+
+    /**
+     * @var Collection<int, form>
+     */
+    #[ORM\OneToMany(targetEntity: form::class, mappedBy: 'pet')]
+    private Collection $form;
+
+    #[ORM\ManyToOne(inversedBy: 'pet')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $asso = null;
+
+    /**
+     * @var Collection<int, behavior>
+     */
+    #[ORM\ManyToMany(targetEntity: behavior::class, inversedBy: 'pets')]
+    private Collection $behavior;
+
+    public function __construct()
+    {
+        $this->form = new ArrayCollection();
+        $this->behavior = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -225,6 +272,96 @@ class Pet
     public function setCategorisedDog(?string $categorisedDog): static
     {
         $this->categorisedDog = $categorisedDog;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getSpecies(): ?species
+    {
+        return $this->species;
+    }
+
+    public function setSpecies(?species $species): static
+    {
+        $this->species = $species;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, form>
+     */
+    public function getForm(): Collection
+    {
+        return $this->form;
+    }
+
+    public function addForm(form $form): static
+    {
+        if (!$this->form->contains($form)) {
+            $this->form->add($form);
+            $form->setPet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeForm(form $form): static
+    {
+        if ($this->form->removeElement($form)) {
+            // set the owning side to null (unless already changed)
+            if ($form->getPet() === $this) {
+                $form->setPet(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAsso(): ?User
+    {
+        return $this->asso;
+    }
+
+    public function setAsso(?User $asso): static
+    {
+        $this->asso = $asso;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, behavior>
+     */
+    public function getBehavior(): Collection
+    {
+        return $this->behavior;
+    }
+
+    public function addBehavior(behavior $behavior): static
+    {
+        if (!$this->behavior->contains($behavior)) {
+            $this->behavior->add($behavior);
+        }
+
+        return $this;
+    }
+
+    public function removeBehavior(behavior $behavior): static
+    {
+        $this->behavior->removeElement($behavior);
 
         return $this;
     }
