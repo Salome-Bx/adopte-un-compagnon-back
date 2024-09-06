@@ -35,6 +35,10 @@ class Form
     #[ORM\Column(type: Types::TEXT)]
     private ?string $message = null;
 
+    #[ORM\ManyToOne(inversedBy: 'form')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Pet $pet = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -120,6 +124,18 @@ class Form
     public function setMessage(string $message): static
     {
         $this->message = $message;
+
+        return $this;
+    }
+
+    public function getPet(): ?Pet
+    {
+        return $this->pet;
+    }
+
+    public function setPet(?Pet $pet): static
+    {
+        $this->pet = $pet;
 
         return $this;
     }

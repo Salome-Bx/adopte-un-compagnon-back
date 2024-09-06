@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -30,6 +33,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
+    
     #[ORM\Column]
     private ?string $password = null;
 
@@ -39,32 +43,52 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
+    #[Groups(['api_users'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $address = null;
 
+    #[Groups(['api_users'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $city = null;
 
+    #[Groups(['api_users'])]
     #[ORM\Column(length: 5, nullable: true)]
     private ?string $postalCode = null;
 
+    #[Groups(['api_users'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
 
+    #[Groups(['api_users'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $registerDate = null;
 
+    #[Groups(['api_users'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nameAsso = null;
 
+    #[Groups(['api_users'])]
     #[ORM\Column(length: 14, nullable: true)]
     private ?string $siret = null;
 
+    #[Groups(['api_users'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $gdpr = null;
 
+    #[Groups(['api_users'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $website = null;
+
+    /**
+     * @var Collection<int, pet>
+     */
+    #[ORM\OneToMany(targetEntity: pet::class, mappedBy: 'asso', orphanRemoval: true)]
+    private Collection $pet;
+
+    public function __construct()
+    {
+        $this->pet = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -268,6 +292,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setWebsite(?string $website): static
     {
         $this->website = $website;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, pet>
+     */
+    public function getPet(): Collection
+    {
+        return $this->pet;
+    }
+
+    public function addPet(pet $pet): static
+    {
+        if (!$this->pet->contains($pet)) {
+            $this->pet->add($pet);
+            $pet->setAsso($this);
+        }
+
+        return $this;
+    }
+
+    public function removePet(pet $pet): static
+    {
+        if ($this->pet->removeElement($pet)) {
+            // set the owning side to null (unless already changed)
+            if ($pet->getAsso() === $this) {
+                $pet->setAsso(null);
+            }
+        }
 
         return $this;
     }
