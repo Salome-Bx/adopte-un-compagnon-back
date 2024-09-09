@@ -85,6 +85,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: pet::class, mappedBy: 'asso', orphanRemoval: true)]
     private Collection $pet;
 
+    #[ORM\Column(length: 255)]
+    private ?string $image = null;
+
     public function __construct()
     {
         $this->pet = new ArrayCollection();
@@ -322,6 +325,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $pet->setAsso(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }

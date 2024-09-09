@@ -40,4 +40,14 @@ class PetRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    public function findBySOS(): array 
+        {
+            $pets= new Pet;
+            $pets = $this->findBy(["sos" => 1]);
+            return $pets;
+        
+        }
+
+    // }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Pet;
 use App\Repository\PetRepository;
 
 use Psr\Log\LoggerInterface;
@@ -31,5 +32,12 @@ class PetController extends AbstractController
         return new JsonResponse($data, 200, [], true);
     }
 
+    #[Route('/sos', name: '_sos', methods: ['GET'])]
+    public function AllSos(PetRepository $petRepository, SerializerInterface $serializer): JsonResponse
+    {
+        $sos = $petRepository->findBySOS();
+        $data = $serializer->serialize($sos, 'json', ['groups' => 'api_pet_sos']);
+        return new JsonResponse($data, 200, [], true);
+    }
     
 }
