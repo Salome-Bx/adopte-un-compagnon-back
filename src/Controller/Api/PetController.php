@@ -24,11 +24,15 @@ class PetController extends AbstractController
         $this->logger = $logger;
     }
 
-    // #[Route('/profil', name: '_all', methods: ['GET'])]
-    // public function petProfilById() 
-    // {
-        
-    // }
+
+    #[Route('/{id}', name: '_id', methods: ['GET'])]
+    public function petById(PetRepository $petRepository, SerializerInterface $serializer, int $id): JsonResponse 
+    {
+        $data = $petRepository->find($id);
+        return $this->json($data, context: ['groups' => 'api_pet_id']);
+    }
+
+
 
     #[Route('s', name: '_all', methods: ['GET'])]
     public function index(PetRepository $petRepository, SerializerInterface $serializer): JsonResponse
