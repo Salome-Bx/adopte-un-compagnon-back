@@ -15,6 +15,7 @@ class Pet
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['api_pets'])]
     private ?int $id = null;
 
 
