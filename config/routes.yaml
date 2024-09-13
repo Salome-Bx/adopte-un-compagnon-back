@@ -1,5 +1,7 @@
 controllers:
     resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+        path: ../src/Controller/Api
+        namespace: App\Controller\Api
     type: attribute
+api_user_login:
+    path: /api/user/login
