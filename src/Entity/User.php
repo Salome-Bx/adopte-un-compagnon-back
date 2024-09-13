@@ -80,9 +80,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $website = null;
 
     /**
-     * @var Collection<int, pet>
+     * @var Collection<int, Pet>
      */
-    #[ORM\OneToMany(targetEntity: pet::class, mappedBy: 'asso', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Pet::class, mappedBy: 'asso', orphanRemoval: true)]
     private Collection $pet;
 
     #[ORM\Column(length: 255)]
@@ -300,14 +300,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, pet>
+     * @return Collection<int, Pet>
      */
     public function getPet(): Collection
     {
         return $this->pet;
     }
 
-    public function addPet(pet $pet): static
+    public function addPet(Pet $pet): static
     {
         if (!$this->pet->contains($pet)) {
             $this->pet->add($pet);
@@ -317,7 +317,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removePet(pet $pet): static
+    public function removePet(Pet $pet): static
     {
         if ($this->pet->removeElement($pet)) {
             // set the owning side to null (unless already changed)

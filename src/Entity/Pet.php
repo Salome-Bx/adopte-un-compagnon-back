@@ -19,44 +19,44 @@ class Pet
 
 
 
-    #[Groups(['api_pet_sos', 'api_pets'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
 
-    #[Groups(['api_pet_sos', 'api_pets'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $birthyear = null;
 
 
-    #[Groups(['api_pet_sos', 'api_pets'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id'])]
     #[ORM\Column(length: 255)]
     private ?string $gender = null;
 
 
-    #[Groups(['api_pet_sos', 'api_pets'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id'])]
     #[ORM\Column(length: 255)]
     private ?string $quickDescription = null;
 
-    #[Groups(['api_pet_sos', 'api_pets'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
     
     
-    #[Groups(['api_pet_sos', 'api_pets'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id'])]
     #[ORM\Column]
     private ?bool $getAlongCats = null;
 
     
    
-    #[Groups(['api_pet_sos', 'api_pets'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id'])]
     #[ORM\Column]
     private ?bool $getAlongDogs = null;
 
     
    
-    #[Groups(['api_pet_sos', 'api_pets'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id'])]
     #[ORM\Column]
     private ?bool $getAlongChildren = null;
 
@@ -74,30 +74,30 @@ class Pet
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updateDate = null;
     
-    #[Groups(['api_pets'])]
+    #[Groups(['api_pets', 'api_pet_id'])]
     #[ORM\Column]
     private ?bool $sos = null;
 
-    #[Groups(['api_pets'])]
+    #[Groups(['api_pets', 'api_pet_id'])]
     #[ORM\Column(length: 255)]
     private ?string $race = null;
 
-    #[Groups(['api_pets'])]
+    #[Groups(['api_pets', 'api_pet_id'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $categorisedDog = null;
 
-    #[Groups(['api_pets'])]
+    #[Groups(['api_pets', 'api_pet_id'])]
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'pets')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?species $species = null;
+    private ?Species $species = null;
 
     /**
-     * @var Collection<int, form>
+     * @var Collection<int, Form>
      */
-    #[ORM\OneToMany(targetEntity: form::class, mappedBy: 'pet')]
+    #[ORM\OneToMany(targetEntity: Form::class, mappedBy: 'pet')]
     private Collection $form;
 
     #[ORM\ManyToOne(inversedBy: 'pet')]
@@ -105,9 +105,9 @@ class Pet
     private ?User $asso = null;
 
     /**
-     * @var Collection<int, behavior>
+     * @var Collection<int, Behavior>
      */
-    #[ORM\ManyToMany(targetEntity: behavior::class, inversedBy: 'pets')]
+    #[ORM\ManyToMany(targetEntity: Behavior::class, inversedBy: 'pets')]
     private Collection $behavior;
 
     public function __construct()
@@ -301,12 +301,12 @@ class Pet
         return $this;
     }
 
-    public function getSpecies(): ?species
+    public function getSpecies(): ?Species
     {
         return $this->species;
     }
 
-    public function setSpecies(?species $species): static
+    public function setSpecies(?Species $species): static
     {
         $this->species = $species;
 
@@ -314,14 +314,14 @@ class Pet
     }
 
     /**
-     * @return Collection<int, form>
+     * @return Collection<int, Form>
      */
     public function getForm(): Collection
     {
         return $this->form;
     }
 
-    public function addForm(form $form): static
+    public function addForm(Form $form): static
     {
         if (!$this->form->contains($form)) {
             $this->form->add($form);
@@ -331,7 +331,7 @@ class Pet
         return $this;
     }
 
-    public function removeForm(form $form): static
+    public function removeForm(Form $form): static
     {
         if ($this->form->removeElement($form)) {
             // set the owning side to null (unless already changed)
@@ -356,14 +356,14 @@ class Pet
     }
 
     /**
-     * @return Collection<int, behavior>
+     * @return Collection<int, Behavior>
      */
     public function getBehavior(): Collection
     {
         return $this->behavior;
     }
 
-    public function addBehavior(behavior $behavior): static
+    public function addBehavior(Behavior $behavior): static
     {
         if (!$this->behavior->contains($behavior)) {
             $this->behavior->add($behavior);
@@ -372,7 +372,7 @@ class Pet
         return $this;
     }
 
-    public function removeBehavior(behavior $behavior): static
+    public function removeBehavior(Behavior $behavior): static
     {
         $this->behavior->removeElement($behavior);
 
