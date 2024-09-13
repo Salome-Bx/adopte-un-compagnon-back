@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,6 +14,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[Route('api/user', name: 'api_user')]
 class UserController extends AbstractController
@@ -34,7 +37,7 @@ class UserController extends AbstractController
 
     #[Route('/register', name: '_register', methods: ['POST'])]
     public function register(
-        Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): JsonResponse
+        Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         $user = new User();
@@ -51,16 +54,19 @@ class UserController extends AbstractController
         $user->setWebsite($data['website']);
         $user->setImage($data['image']);
         $user->setRoles($user->getRoles());
+        $user->setRegisterDate(new DateTime(date("Y-m-d")));
+        $user->setGdpr(new DateTime(date("Y-m-d")));
+
         
 
-        // $errors = $validator->validate($user);
-        // if (count($errors) > 0) {
-        //     $errorMessages = [];
-        //     foreach ($errors as $error) {
-        //         $errorMessages[] = $error->getMessage();
-        //     }
-        //     return new JsonResponse(['message' => "Echec lors de l'enregistrement", 'errors' => $errorMessages], JsonResponse::HTTP_BAD_REQUEST);
-        // }
+        $errors = $validator->validate($user);
+        if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[] = $error->getMessage();
+            }
+            return new JsonResponse(['message' => "Echec lors de l'enregistrement", 'errors' => $errorMessages], JsonResponse::HTTP_BAD_REQUEST);
+        }
 
         $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
         $user->setPassword($hashedPassword);
@@ -85,6 +91,8 @@ class UserController extends AbstractController
                 'website' => $user->getWebsite(),
                 'image' => $user->getImage(),
                 'roles' => $user->getRoles(),
+                'register_date' => $user->getRegisterDate(),
+                'gdpr' => $user->getGdpr()
             ]
         ], JsonResponse::HTTP_CREATED);
         
@@ -93,7 +101,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/login', name: '_login', methods: ['POST'])]
-    public function login(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    public function login(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $hashedPassword): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         $email=($data['email']);
@@ -104,6 +112,26 @@ class UserController extends AbstractController
         }
 
         $user = $entityManager->getRepository(User::class)->findOneBy(["email" => $email]);
+
+        if (!$user || !$hashedPassword->isPasswordValid($user, $password)) {
+            return new JsonResponse(['message' => 'Identifiants non valides'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        return new JsonResponse([
+            'message' => 'Connexion réussie',
+            'user' => [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'address' => $user->getAddress(),
+                'city' => $user->getCity(),
+                'postalCode' => $user->getPostalCode(),
+                'phone' => $user->getPhone(),
+                'nameAsso' => $user->getNameAsso(),
+                'website' => $user->getWebsite(),
+                'image' => $user->getImage(),
+                'roles' => $user->getRoles(),
+            ]
+        ], JsonResponse::HTTP_OK);
     }
     
 }
