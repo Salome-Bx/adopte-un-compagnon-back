@@ -40,24 +40,29 @@ class UserController extends AbstractController
         Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        $user = new User();
-        $user->setEmail($data['email']);
-        $user->setPassword($data['password']);
-        $user->setLastname($data['lastname']);
-        $user->setFirstname($data['firstname']);
-        $user->setAddress($data['address']);
-        $user->setCity($data['city']);
-        $user->setPostalCode($data['postalCode']);
-        $user->setPhone($data['phone']);
-        $user->setNameAsso($data['nameAsso']);
-        $user->setSiret($data['siret']);
-        $user->setWebsite($data['website']);
-        $user->setImage($data['image']);
-        $user->setRoles($user->getRoles());
-        $user->setRegisterDate(new DateTime(date("Y-m-d")));
-        $user->setGdpr(new DateTime(date("Y-m-d")));
-
         
+        if (!isset($data['email']) || !isset($data['password']) || !isset($data['lastname']) || !isset($data['firstname']) || !isset($data['address']) || !isset($data['city']) || !isset($data['postalCode']) || !isset($data['phone']) || !isset($data['nameAsso']) || !isset($data['siret']) || !isset($data['website']) || !isset($data['image'])) {
+            return new JsonResponse(['message' => 'Données manquantes'], JsonResponse::HTTP_BAD_REQUEST);
+        } else {
+            $user = new User();
+            $user->setEmail($data['email']);
+            $user->setPassword($data['password']);
+            $user->setLastname($data['lastname']);
+            $user->setFirstname($data['firstname']);
+            $user->setAddress($data['address']);
+            $user->setCity($data['city']);
+            $user->setPostalCode($data['postalCode']);
+            $user->setPhone($data['phone']);
+            $user->setNameAsso($data['nameAsso']);
+            $user->setSiret($data['siret']);
+            $user->setWebsite($data['website']);
+            $user->setImage($data['image']);
+            $user->setRoles($user->getRoles());
+            $user->setRegisterDate(new DateTime(date("Y-m-d")));
+            $user->setGdpr(new DateTime(date("Y-m-d")));   
+        }
+        
+
 
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
@@ -95,25 +100,23 @@ class UserController extends AbstractController
                 'gdpr' => $user->getGdpr()
             ]
         ], JsonResponse::HTTP_CREATED);
-        
-        
-
+      
     }
 
     #[Route('/login', name: '_login', methods: ['POST'])]
     public function login(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $hashedPassword): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
+        if (!isset($data['email']) || !isset($data['password'])) {
+            return new JsonResponse(['message' => 'Données manquantes'], JsonResponse::HTTP_BAD_REQUEST);
+        }
         $email=($data['email']);
         $password=($data['password']);
 
-        if (!$email || !$password) {
-            return new JsonResponse(['message' => 'Veuillez remplir les deux champs'], JsonResponse::HTTP_BAD_REQUEST);
-        }
-
+        
         $user = $entityManager->getRepository(User::class)->findOneBy(["email" => $email]);
 
-        if (!$user || !$hashedPassword->isPasswordValid($user, $password)) {
+        if (!($user) || !$hashedPassword->isPasswordValid($user, $password)) {
             return new JsonResponse(['message' => 'Identifiants non valides'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
