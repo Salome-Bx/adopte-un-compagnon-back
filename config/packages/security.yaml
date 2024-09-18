@@ -34,6 +34,7 @@ security:
          - { path: ^/api/accueilAsso, roles: IS_AUTHENTICATED_FULLY }
          - { path: ^/api/creationAnimal, roles: IS_AUTHENTICATED_FULLY }
 
+
 when@test:
     security:
         password_hashers:

@@ -9,6 +9,7 @@ use App\Repository\PetRepository;
 use App\Repository\SpeciesRepository;
 use App\Repository\UserRepository;
 use DateTime;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,6 +37,15 @@ class PetController extends AbstractController
         $data = $serializer->serialize($sos, 'json', ['groups' => 'api_pet_sos']);
         return new JsonResponse($data, 200, [], true);
     }
+
+    #[Route('/{id}', name: '_id', methods: ['GET'])]
+    public function petById(PetRepository $petRepository, SerializerInterface $serializer, int $id): JsonResponse 
+    {
+        $data = $petRepository->find($id);
+        return $this->json($data, context: ['groups' => 'api_pet_id']);
+    }
+
+
 
     #[Route('/{id}', name: '_id', methods: ['GET'])]
     public function petById(PetRepository $petRepository, SerializerInterface $serializer, int $id): JsonResponse 
@@ -251,5 +261,6 @@ class PetController extends AbstractController
         $entityManager->flush();
 
         return new JsonResponse(['message' => 'Animal supprimé avec succès'], 200, [], true);
+
     }
 }

@@ -149,6 +149,7 @@ class UserController extends AbstractController
         Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
+
         
         if (!isset($data['email']) || !isset($data['password']) || !isset($data['lastname']) || !isset($data['firstname']) || !isset($data['address']) || !isset($data['city']) || !isset($data['postalCode']) || !isset($data['phone']) || !isset($data['nameAsso']) || !isset($data['siret']) || !isset($data['website']) || !isset($data['image'])) {
             return new JsonResponse(['message' => 'Données manquantes'], JsonResponse::HTTP_BAD_REQUEST);
@@ -177,6 +178,7 @@ class UserController extends AbstractController
             $errorMessages = [];
             return new JsonResponse(['message' => 'Email déjà utilisé', 'errors' => $errorMessages], JsonResponse::HTTP_UNAUTHORIZED);
         }
+
 
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
@@ -214,6 +216,7 @@ class UserController extends AbstractController
                 'gdpr' => $user->getGdpr()
             ]
         ], JsonResponse::HTTP_CREATED);
+
       
     }
 
@@ -243,6 +246,8 @@ class UserController extends AbstractController
         return new JsonResponse([
             'message' => 'Connexion réussie',
             'token' => $token,
+    }
+
             'user' => [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
@@ -257,6 +262,7 @@ class UserController extends AbstractController
             ]
         ], JsonResponse::HTTP_OK);
     }
+
 
     
     #[Route('/logout', name: '_logout', methods: ['POST'])]
@@ -275,6 +281,7 @@ class UserController extends AbstractController
 
         return new JsonResponse(['message' => 'Association supprimée avec succès'], 200, [], true);
     }
+
     
 }
 
