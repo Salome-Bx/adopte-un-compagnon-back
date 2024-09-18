@@ -6,6 +6,9 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use OpenApi\Annotations\Response;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,6 +30,29 @@ class UserController extends AbstractController
         $this->logger = $logger;
     }
 
+    #[Route('/{id}', name: '_id', methods: ['GET'])]
+    public function userById(UserRepository $userRepository, SerializerInterface $serializer, int $id): JsonResponse
+    {
+        $data = $userRepository->find($id);
+        return $this->json($data, context: ['groups' => 'api_user_id']);
+    }
+
+    // #[Route('/{id}/edit', name: '_edit', methods: ['GET', 'POST'])]
+    // public function editUser(Request $request, User $User, EntityManagerInterface $entityManager): JsonResponse
+    // {
+    //     $form = $this->createForm(User::class, $User);
+    //     $form->handleRequest($request);
+
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         $entityManager->flush();
+
+    //         $this->addFlash('success', 'Modification effectuée');
+    //         return $this->redirectToRoute('api_user_edit', [], Response::HTTP_SEE_OTHER);
+    //     }
+
+    //     return new JsonResponse($data, 200, [], true);
+    // }
+
     #[Route('s', name: '_all', methods: ['GET'])]
     public function index(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -40,24 +66,34 @@ class UserController extends AbstractController
         Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        $user = new User();
-        $user->setEmail($data['email']);
-        $user->setPassword($data['password']);
-        $user->setLastname($data['lastname']);
-        $user->setFirstname($data['firstname']);
-        $user->setAddress($data['address']);
-        $user->setCity($data['city']);
-        $user->setPostalCode($data['postalCode']);
-        $user->setPhone($data['phone']);
-        $user->setNameAsso($data['nameAsso']);
-        $user->setSiret($data['siret']);
-        $user->setWebsite($data['website']);
-        $user->setImage($data['image']);
-        $user->setRoles($user->getRoles());
-        $user->setRegisterDate(new DateTime(date("Y-m-d")));
-        $user->setGdpr(new DateTime(date("Y-m-d")));
-
         
+        if (!isset($data['email']) || !isset($data['password']) || !isset($data['lastname']) || !isset($data['firstname']) || !isset($data['address']) || !isset($data['city']) || !isset($data['postalCode']) || !isset($data['phone']) || !isset($data['nameAsso']) || !isset($data['siret']) || !isset($data['website']) || !isset($data['image'])) {
+            return new JsonResponse(['message' => 'Données manquantes'], JsonResponse::HTTP_BAD_REQUEST);
+        } else {
+            $user = new User();
+            $user->setEmail($data['email']);
+            $user->setPassword($data['password']);
+            $user->setLastname($data['lastname']);
+            $user->setFirstname($data['firstname']);
+            $user->setAddress($data['address']);
+            $user->setCity($data['city']);
+            $user->setPostalCode($data['postalCode']);
+            $user->setPhone($data['phone']);
+            $user->setNameAsso($data['nameAsso']);
+            $user->setSiret($data['siret']);
+            $user->setWebsite($data['website']);
+            $user->setImage($data['image']);
+            $user->setRoles($user->getRoles());
+            $user->setRegisterDate(new DateTime(date("Y-m-d")));
+            $user->setGdpr(new DateTime(date("Y-m-d")));   
+        }
+        
+        $userExist = $entityManager->getRepository(User::class)->findOneBy(["email" => $data['email']]);
+
+        if ($userExist) {
+            $errorMessages = [];
+            return new JsonResponse(['message' => 'Email déjà utilisé', 'errors' => $errorMessages], JsonResponse::HTTP_UNAUTHORIZED);
+        }
 
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
@@ -95,30 +131,35 @@ class UserController extends AbstractController
                 'gdpr' => $user->getGdpr()
             ]
         ], JsonResponse::HTTP_CREATED);
-        
-        
-
+      
     }
 
     #[Route('/login', name: '_login', methods: ['POST'])]
-    public function login(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $hashedPassword): JsonResponse
+    public function login(
+        Request $request, 
+        EntityManagerInterface $entityManager, 
+        UserPasswordHasherInterface $hashedPassword,
+        JWTTokenManagerInterface $JWTTokenManager): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
+        if (!isset($data['email']) || !isset($data['password'])) {
+            return new JsonResponse(['message' => 'Données manquantes'], JsonResponse::HTTP_BAD_REQUEST);
+        }
         $email=($data['email']);
         $password=($data['password']);
 
-        if (!$email || !$password) {
-            return new JsonResponse(['message' => 'Veuillez remplir les deux champs'], JsonResponse::HTTP_BAD_REQUEST);
-        }
-
+        
         $user = $entityManager->getRepository(User::class)->findOneBy(["email" => $email]);
 
-        if (!$user || !$hashedPassword->isPasswordValid($user, $password)) {
+        if (!($user) || !$hashedPassword->isPasswordValid($user, $password)) {
             return new JsonResponse(['message' => 'Identifiants non valides'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
+        $token = $JWTTokenManager->create($user); 
+
         return new JsonResponse([
             'message' => 'Connexion réussie',
+            'token' => $token,
             'user' => [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
@@ -132,6 +173,23 @@ class UserController extends AbstractController
                 'roles' => $user->getRoles(),
             ]
         ], JsonResponse::HTTP_OK);
+    }
+
+    
+    #[Route('/logout', name: '_logout', methods: ['POST'])]
+    public function logout(): JsonResponse
+    {
+        return new JsonResponse(['message' => 'Vous êtes déconnecté'], JsonResponse::HTTP_OK);
+    }
+
+    #[Route('/{id}/delete', name: '_delete', methods: ['DELETE'])]
+    public function deletePet(UserRepository $userRepository, EntityManagerInterface $entityManager, int $id): JsonResponse
+    {
+        $user = $userRepository->find($id);
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        return new JsonResponse(['message' => 'Association supprimée avec succès'], 200, [], true);
     }
     
 }

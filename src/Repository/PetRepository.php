@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Pet;
+use App\Entity\Species;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -43,11 +44,13 @@ class PetRepository extends ServiceEntityRepository
 
     public function findBySOS(): array 
         {
-            $pets= new Pet;
+            $pets = new Pet;
             $pets = $this->findBy(["sos" => 1]);
             return $pets;
         
         }
+    
+   
 
     // }
 }
