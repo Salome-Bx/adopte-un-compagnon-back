@@ -30,7 +30,10 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/api/pets, roles: PUBLIC_ACCESS }
-         - { path: ^/api/user, roles: IS_AUTHENTICATED_FULLY }
+         - { path: ^/api/users, roles: PUBLIC_ACCESS }
+         - { path: ^/api/accueilAsso, roles: IS_AUTHENTICATED_FULLY }
+         - { path: ^/api/creationAnimal, roles: IS_AUTHENTICATED_FULLY }
+
 
 when@test:
     security:
