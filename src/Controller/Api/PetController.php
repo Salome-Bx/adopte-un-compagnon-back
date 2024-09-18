@@ -150,7 +150,7 @@ class PetController extends AbstractController
 
     }
 
-    #[Route('/{id}/edit', name: '_edit', methods: ['POST'])]
+    #[Route('/{id}/edit', name: '_edit', methods: ['PUT'])]
     public function editPet(
         Request $request,
         Pet $pet,
@@ -164,6 +164,7 @@ class PetController extends AbstractController
     {
         
         $data = json_decode($request->getContent(), true);
+
         if (isset($data['name'])) {
             $pet->setName($data['name']);
         }
@@ -223,7 +224,7 @@ class PetController extends AbstractController
             foreach ($errors as $error) {
                 $errorMessages[] = $error->getMessage();
             }
-            return new JsonResponse(['message' => 'Validation failed', 'errors' => $errorMessages], JsonResponse::HTTP_BAD_REQUEST);
+            return new JsonResponse(['message' => 'Echec de la modification', 'errors' => $errorMessages], JsonResponse::HTTP_BAD_REQUEST);
         }
 
         $entityManager->persist($pet);

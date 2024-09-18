@@ -37,21 +37,104 @@ class UserController extends AbstractController
         return $this->json($data, context: ['groups' => 'api_user_id']);
     }
 
-    // #[Route('/{id}/edit', name: '_edit', methods: ['GET', 'POST'])]
-    // public function editUser(Request $request, User $User, EntityManagerInterface $entityManager): JsonResponse
-    // {
-    //     $form = $this->createForm(User::class, $User);
-    //     $form->handleRequest($request);
+    #[Route('/{id}/edit', name: '_edit', methods: ['PUT'])]
+    
+        public function editUser(
+            Request $request,
+            User $user,
+            SerializerInterface $serializer, 
+            EntityManagerInterface $entityManager,
+            UserRepository $userRepository,
+            ValidatorInterface $validator
+            ): JsonResponse
+        {
+            
+            $data = json_decode($request->getContent(), true);
 
-    //     if ($form->isSubmitted() && $form->isValid()) {
-    //         $entityManager->flush();
+            if (isset($data['email'])) {
+                $user->setEmail($data['email']);
+            }
+            if (isset($data['password'])) {
+                $user->setPassword($data['password']);
+            }
+            if (isset($data['lastname'])) {
+                $user -> setLastname($data['lastname']);
+            }
+            if (isset($data['firstname'])) {
+                $user->setFirstname($data['firstname']); 
+            }
+            if (isset($data['address'])) {
+                $user->setAddress($data['address']); 
+            }
+            if (isset($data['city'])) {
+                $user->setCity($data['city']); 
+            }
+            if (isset($data['postalCode'])) {
+                $user->setPostalCode($data['postalCode']); 
+            }
+            if (isset($data['phone'])) {
+                $user->setPhone($data['phone']); 
+            }
+            if (isset($data['nameAsso'])) {
+                $user->setPhone($data['nameAsso']); 
+            }
+            if (isset($data['siret'])) {
+                $user->setSiret($data['siret']); 
+            }
+            if (isset($data['website'])) {
+                $user->setWebsite($data['website']);
+            }
+            if (isset($data['image'])) {
+                $user->setImage($data['image']);
+            }
+            if (isset($data['register_date'])) {
+                $user->setRegisterDate(new DateTime(date("Y-m-d")));
+            }
+            if (isset($data['roles'])) {
+                $user->setRoles($user->getRoles());
+            }
+            if (isset($data['gdpr'])) {
+                $user->setGdpr(new DateTime(date("Y-m-d")));
+            }
+    
 
-    //         $this->addFlash('success', 'Modification effectuée');
-    //         return $this->redirectToRoute('api_user_edit', [], Response::HTTP_SEE_OTHER);
-    //     }
-
-    //     return new JsonResponse($data, 200, [], true);
-    // }
+            $errors = $validator->validate($user);
+            if (count($errors) > 0) {
+                $errorMessages = [];
+                foreach ($errors as $error) {
+                    $errorMessages[] = $error->getMessage();
+                }
+                return new JsonResponse(['message' => 'Echec de la modification', 'errors' => $errorMessages], JsonResponse::HTTP_BAD_REQUEST);
+            }
+    
+            $entityManager->persist($user);
+            $entityManager->flush();
+    
+            return new JsonResponse([
+                'message' => 'Association modifiée avec succès',
+                'user' => [
+                    'id' => $user->getId(),
+                    'email' => $user->getEmail(),
+                    'password' => $user->getPassword(),
+                    'lastname' => $user->getLastname(),
+                    'firstname' => $user->getFirstname(),
+                    'address' => $user->getAddress(),
+                    'city' => $user->getCity(),
+                    'postalCode' => $user->getPostalCode(),
+                    'phone' => $user->getPhone(),
+                    'nameAsso' => $user->getNameAsso(),
+                    'siret' => $user->getSiret(),
+                    'website' => $user->getWebsite(),
+                    'image' => $user->getImage(),
+                    'roles' => $user->getRoles(),
+                    'register_date' => $user->getRegisterDate(),
+                    'gdpr' => $user->getGdpr()
+                ]
+            ], JsonResponse::HTTP_CREATED);
+          
+    
+        }
+    
 
     #[Route('s', name: '_all', methods: ['GET'])]
     public function index(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
@@ -183,6 +266,7 @@ class UserController extends AbstractController
     {
         return new JsonResponse(['message' => 'Vous êtes déconnecté'], JsonResponse::HTTP_OK);
     }
+    
 
     #[Route('/{id}/delete', name: '_delete', methods: ['DELETE'])]
     public function deletePet(UserRepository $userRepository, EntityManagerInterface $entityManager, int $id): JsonResponse
