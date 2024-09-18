@@ -37,6 +37,31 @@ class PetController extends AbstractController
         return new JsonResponse($data, 200, [], true);
     }
 
+    #[Route('/sos', name: '_sos', methods: ['GET'])]
+    public function AllSos(PetRepository $petRepository, SerializerInterface $serializer): JsonResponse
+    {
+        $sos = $petRepository->findBySOS();
+        $data = $serializer->serialize($sos, 'json', ['groups' => 'api_pet_sos']);
+        return new JsonResponse($data, 200, [], true);
+    }
+
+    // #[Route('/account/pets', name: '_account', methods: ['GET'])]
+    // public function getPetsByAsso(PetRepository $petRepository, SerializerInterface $serializer): JsonResponse
+    // {
+    //     try {
+    //         $pets = $petRepository->findAllPetsByAsso($id);
+    //         $data = $serializer->serialize($pets, 'json', ['groups' => 'api_pets_account_pets']);
+    //         return new JsonResponse($data, 200, [], true);
+
+    //     } catch (\Exception $e) {
+    //         return $this->json([
+    //             'error' => 'Une erreur est survenue lors de la récupération des animaux.',
+    //             'details' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+
     #[Route('/{id}', name: '_id', methods: ['GET'])]
     public function petById(PetRepository $petRepository, SerializerInterface $serializer, int $id): JsonResponse 
     {
@@ -55,6 +80,7 @@ class PetController extends AbstractController
     }
 
 
+
     #[Route('/new', name: '_new', methods: ['POST'])]
     public function createPet(
         Request $request, 
@@ -63,6 +89,7 @@ class PetController extends AbstractController
         ValidatorInterface $validator,
         SpeciesRepository $speciesRepository,
         UserRepository $userRepository): JsonResponse
+
     {
         $data = json_decode($request->getContent(), true);
         $pet = new Pet();
@@ -133,6 +160,7 @@ class PetController extends AbstractController
         UserRepository $userRepository,
         ValidatorInterface $validator
         ): JsonResponse
+
     {
         
         $data = json_decode($request->getContent(), true);
