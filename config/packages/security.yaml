@@ -31,6 +31,7 @@ security:
     access_control:
          - { path: ^/api/pets, roles: PUBLIC_ACCESS }
          - { path: ^/api/users, roles: PUBLIC_ACCESS }
+         - { path: ^/api/form/new, roles: PUBLIC_ACCESS }
          - { path: ^/api/accueilAsso, roles: IS_AUTHENTICATED_FULLY }
          - { path: ^/api/creationAnimal, roles: IS_AUTHENTICATED_FULLY }
 

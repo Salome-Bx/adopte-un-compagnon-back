@@ -63,9 +63,10 @@ class PetController extends AbstractController
 
 
     #[Route('/{id}', name: '_id', methods: ['GET'])]
-    public function petById(PetRepository $petRepository, SerializerInterface $serializer, int $id): JsonResponse 
+    public function petById(PetRepository $petRepository, SerializerInterface $serializer, int $id, UserRepository $userRepository): JsonResponse 
     {
         $data = $petRepository->find($id);
+        // $asso = $userRepository->findOneBy("id" -> $data)
         return $this->json($data, context: ['groups' => 'api_pet_id']);
     }
 
