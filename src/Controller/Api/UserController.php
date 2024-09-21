@@ -137,7 +137,7 @@ class UserController extends AbstractController
     
 
     #[Route('s', name: '_all', methods: ['GET'])]
-    public function index(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
+    public function getAllUsers(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {
         $users = $userRepository->findAll();
         $data = $serializer->serialize($users, 'json', ['groups' => 'api_users']);
@@ -267,7 +267,7 @@ class UserController extends AbstractController
     
 
     #[Route('/{id}/delete', name: '_delete', methods: ['DELETE'])]
-    public function deletePet(UserRepository $userRepository, EntityManagerInterface $entityManager, int $id): JsonResponse
+    public function deleteUser(UserRepository $userRepository, EntityManagerInterface $entityManager, int $id): JsonResponse
     {
         $user = $userRepository->find($id);
         $entityManager->remove($user);

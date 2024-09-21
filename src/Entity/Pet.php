@@ -100,7 +100,8 @@ class Pet
      */
     #[ORM\OneToMany(targetEntity: Form::class, mappedBy: 'pet')]
     private Collection $form;
-
+    
+    #[Groups(['api_pet_id'])]
     #[ORM\ManyToOne(inversedBy: 'pet')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $asso = null;
