@@ -276,6 +276,16 @@ class UserController extends AbstractController
         return new JsonResponse(['message' => 'Association supprimée avec succès'], 200, [], true);
     }
     
+    #[Route('/{id}/home/asso/pets', name: '_home_asso_pets', methods: ['GET'])]
+    public function getPetsByAsso(UserRepository $userRepository, SerializerInterface $serializer, int $id): JsonResponse
+    {
+        $user = $userRepository->find($id);
+        $pets = $user->getPet();
+        $data = $serializer->serialize($pets, 'json', ['groups' => 'api_home_asso_pets']);
+        
+        return new JsonResponse($data, 200, [], true);
+    }
+    
 }
 
 
