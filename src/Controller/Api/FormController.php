@@ -50,7 +50,7 @@ class FormController extends AbstractController
         $form->setDateForm(new DateTime(date("Y-m-d")));
         $form->setPet($petRepository->findOneBy(array("id" => $data['pet_id'])));
         $form->setPet($pet->getAsso(array("id" => $data['asso_id'])));
-        // $form->setPet($petRepository->find($data['user_id']));
+        
 
         
 
@@ -75,6 +75,8 @@ class FormController extends AbstractController
                 'postal_code' => $form->getPostalCode(),
                 'phone' => $form->getPhone(),
                 'message' => $form->getMessage(),
+                'date_form' => $form->getDateForm(),
+                'pet_id' => $form->getPet(),
             ]
         ], JsonResponse::HTTP_CREATED);
 
