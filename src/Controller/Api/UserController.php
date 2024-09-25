@@ -17,7 +17,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[Route('api/user', name: 'api_user')]
@@ -45,10 +44,11 @@ class UserController extends AbstractController
             SerializerInterface $serializer, 
             EntityManagerInterface $entityManager,
             UserRepository $userRepository,
-            ValidatorInterface $validator
+            ValidatorInterface $validator,
+            int $id
             ): JsonResponse
         {
-            
+            $data = $userRepository->find($id);
             $data = json_decode($request->getContent(), true);
 
             if (isset($data['email'])) {
@@ -129,7 +129,8 @@ class UserController extends AbstractController
                     'roles' => $user->getRoles(),
                     'register_date' => $user->getRegisterDate(),
                     'gdpr' => $user->getGdpr()
-                ]
+                ],
+                'context' => ['groups' => 'api_user_edit']
             ], JsonResponse::HTTP_CREATED);
           
     
@@ -287,6 +288,7 @@ class UserController extends AbstractController
         
         return new JsonResponse($data, 200, [], true);
     }
+    
     
 }
 

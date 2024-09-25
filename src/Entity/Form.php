@@ -13,34 +13,34 @@ class Form
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['api_forms'])]
+    #[Groups(['api_forms','api_home_asso_forms'])]
     private ?int $id = null;
 
-    #[Groups(['api_forms'])]
+    #[Groups(['api_forms','api_home_asso_forms'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateForm = null;
 
-    #[Groups(['api_forms'])]
+    #[Groups(['api_forms','api_home_asso_forms'])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
-    #[Groups(['api_forms'])]
+    #[Groups(['api_forms','api_home_asso_forms'])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
-    #[Groups(['api_forms'])]
+    #[Groups(['api_forms','api_home_asso_forms'])]
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
-    #[Groups(['api_forms'])]
+    #[Groups(['api_forms','api_home_asso_forms'])]
     #[ORM\Column(length: 5)]
     private ?string $postalCode = null;
 
-    #[Groups(['api_forms'])]
+    #[Groups(['api_forms','api_home_asso_forms'])]
     #[ORM\Column(length: 255)]
     private ?string $phone = null;
 
-    #[Groups(['api_forms'])]
+    #[Groups(['api_forms','api_home_asso_forms'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $message = null;
 
