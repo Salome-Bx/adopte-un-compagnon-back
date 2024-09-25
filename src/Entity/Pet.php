@@ -15,12 +15,12 @@ class Pet
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['api_pets', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pets', 'api_home_asso_pets', 'api_pet_edit', 'api_home_asso_forms'])]
     private ?int $id = null;
 
 
 
-    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit', 'api_home_asso_forms'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
@@ -98,6 +98,8 @@ class Pet
     /**
      * @var Collection<int, Form>
      */
+    
+    #[Groups([ 'api_home_asso_forms'])]
     #[ORM\OneToMany(targetEntity: Form::class, mappedBy: 'pet')]
     private Collection $form;
     

@@ -21,6 +21,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['api_user_edit'])]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
@@ -37,45 +38,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[Groups(['api_user_edit'])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
+    #[Groups(['api_user_edit'])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
-    #[Groups(['api_users', 'api_user_id', 'api_pet_id'])]
+    #[Groups(['api_users', 'api_user_id', 'api_pet_id','api_user_edit'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $address = null;
 
-    #[Groups(['api_users', 'api_user_id', 'api_pet_id'])]
+    #[Groups(['api_users', 'api_user_id', 'api_pet_id','api_user_edit'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $city = null;
 
-    #[Groups(['api_users', 'api_user_id', 'api_pet_id'])]
+    #[Groups(['api_users', 'api_user_id', 'api_pet_id','api_user_edit'])]
     #[ORM\Column(length: 5, nullable: true)]
     private ?string $postalCode = null;
 
-    #[Groups(['api_users', 'api_user_id', 'api_pet_id'])]
+    #[Groups(['api_users', 'api_user_id', 'api_pet_id','api_user_edit'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
 
-    #[Groups(['api_users', 'api_user_id'])]
+    #[Groups(['api_users', 'api_user_id','api_user_edit'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $registerDate = null;
 
-    #[Groups(['api_users', 'api_user_id', 'api_pet_id'])]
+    #[Groups(['api_users', 'api_user_id', 'api_pet_id','api_user_edit'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nameAsso = null;
 
-    #[Groups(['api_users', 'api_user_id'])]
+    #[Groups(['api_users', 'api_user_id','api_user_edit'])]
     #[ORM\Column(length: 14, nullable: true)]
     private ?string $siret = null;
 
-    #[Groups(['api_users', 'api_user_id'])]
+    #[Groups(['api_users', 'api_user_id','api_user_edit'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $gdpr = null;
 
-    #[Groups(['api_users', 'api_user_id', 'api_pet_id'])]
+    #[Groups(['api_users', 'api_user_id', 'api_pet_id','api_user_edit'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $website = null;
 
@@ -85,7 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Pet::class, mappedBy: 'asso', orphanRemoval: true)]
     private Collection $pet;
     
-    #[Groups(['api_users', 'api_user_id', 'api_pet_id'])]
+    #[Groups(['api_users', 'api_user_id', 'api_pet_id','api_user_edit'])]
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 

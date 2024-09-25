@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\FormRepository;
 use App\Repository\PetRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -81,6 +82,16 @@ class FormController extends AbstractController
         ], JsonResponse::HTTP_CREATED);
 
 
+    }
+
+    #[Route('/{id}/home/asso/forms', name: '_home_asso_forms', methods: ['GET'])]
+    public function getFormsByAsso(UserRepository $userRepository, PetRepository $petRepository, Pet $pet, SerializerInterface $serializer, int $id): JsonResponse
+    {
+        $pets = $petRepository->findBy(["asso" => $id]);
+        
+        $data = $serializer->serialize($pets, 'json', ['groups' => 'api_home_asso_forms']);
+        
+        return new JsonResponse($data, 200, [], true);
     }
 
 
