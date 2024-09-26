@@ -50,9 +50,7 @@ class FormController extends AbstractController
         $form->setMessage($data['message']);
         $form->setDateForm(new DateTime(date("Y-m-d")));
         $form->setPet($petRepository->findOneBy(array("id" => $data['pet_id'])));
-        $form->setPet($pet->getAsso(array("id" => $data['asso_id'])));
         
-
         
 
         $errors = $validator->validate($form);
@@ -80,7 +78,6 @@ class FormController extends AbstractController
                 'pet_id' => $form->getPet(),
             ]
         ], JsonResponse::HTTP_CREATED);
-
 
     }
 
