@@ -241,4 +241,19 @@ class PetController extends AbstractController
 
         return new JsonResponse(['message' => 'Animal supprimé avec succès'], 200, [], true);
     }
+
+
+    
+
+#[Route('/filter', name: '_pet_filter', methods: ['GET'])]
+public function filterPetByPostalCode(Request $request, PetRepository $petRepository, EntityManagerInterface $entityManager): JsonResponse
+{
+    // Récupère la valeur de l'input 'search' (ou le nom que tu as donné à ton champ)
+    $postalCode = $request->query->get('search');
+    $pets = $petRepository->filterByPostalCode($postalCode);
+
+
+    return new JsonResponse(['message' => 'Aucun animal trouvé'], 404);
+}
+
 }

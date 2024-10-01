@@ -54,7 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $city = null;
 
-    #[Groups(['api_users', 'api_user_id', 'api_pet_id','api_user_edit'])]
+    #[Groups(['api_users', 'api_user_id', 'api_pet_id','api_user_edit', 'api_pets'])]
     #[ORM\Column(length: 5, nullable: true)]
     private ?string $postalCode = null;
 

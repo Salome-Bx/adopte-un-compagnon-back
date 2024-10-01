@@ -49,8 +49,22 @@ class PetRepository extends ServiceEntityRepository
             return $pets;
         
         }
+
+
+    public function filterByPostalCode(string $postalCode) : array {
+
+        return $this->createQueryBuilder('p')
+            ->innerJoin('user', 'a')
+            ->where('a.postalCode = :postal_code')
+            ->andWhere('p.asso_id = a.id')
+            ->setParameter('postalCode', $postalCode. '%')
+            ->getQuery()
+            ->getResult();
+
+        }
+
+        
     
-   
 
     // }
 }
