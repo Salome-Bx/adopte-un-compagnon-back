@@ -19,6 +19,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
+
 #[Route('api/user', name: 'api_user')]
 class UserController extends AbstractController
 {
@@ -29,6 +30,9 @@ class UserController extends AbstractController
         $this->logger = $logger;
     }
 
+    /**
+     * permet de récupérer un utilisateur par son id
+     */
     #[Route('/{id}', name: '_id', methods: ['GET'])]
     public function userById(UserRepository $userRepository, SerializerInterface $serializer, int $id): JsonResponse
     {
@@ -36,6 +40,9 @@ class UserController extends AbstractController
         return $this->json($data, context: ['groups' => 'api_user_id']);
     }
 
+    /**
+     * permet de modifier les informations d'un utilisateur grâce à son id
+     */
     #[Route('/{id}/edit', name: '_edit', methods: ['PUT'])]
     
         public function editUser(
@@ -88,14 +95,16 @@ class UserController extends AbstractController
                 $user->setImage($data['image']);
             }
             if (isset($data['register_date'])) {
-                $user->setRegisterDate(new DateTime(date("Y-m-d")));
+                $user->setRegisterDate(new DateTime(date("d-m-Y")));
             }
             if (isset($data['roles'])) {
                 $user->setRoles($user->getRoles());
             }
             if (isset($data['gdpr'])) {
-                $user->setGdpr(new DateTime(date("Y-m-d")));
+                $user->setGdpr(new DateTime(date("d-m-Y")));
             }
+
+         
     
 
             $errors = $validator->validate($user);
@@ -127,8 +136,8 @@ class UserController extends AbstractController
                     'website' => $user->getWebsite(),
                     'image' => $user->getImage(),
                     'roles' => $user->getRoles(),
-                    'register_date' => $user->getRegisterDate(),
-                    'gdpr' => $user->getGdpr()
+                    'register_date' => $user->getRegisterDate()->format('d-m-Y'),
+                    'gdpr' => $user->getGdpr()->format('d-m-Y')
                 ],
                 'context' => ['groups' => 'api_user_edit']
             ], JsonResponse::HTTP_CREATED);
@@ -136,7 +145,9 @@ class UserController extends AbstractController
     
         }
     
-
+    /**
+     * permet de récupérer tous les utilisateurs
+     */
     #[Route('s', name: '_all', methods: ['GET'])]
     public function getAllUsers(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -145,6 +156,10 @@ class UserController extends AbstractController
         return new JsonResponse($data, 200, [], true);
     }
 
+    /**
+     * permet d'enregistrer un utilisateur
+     * register a new user
+     */
     #[Route('/register', name: '_register', methods: ['POST'])]
     public function register(
         Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator): JsonResponse
@@ -156,18 +171,18 @@ class UserController extends AbstractController
             return new JsonResponse(['message' => 'Données manquantes'], JsonResponse::HTTP_BAD_REQUEST);
         } else {
             $user = new User();
-            $user->setEmail($data['email']);
-            $user->setPassword($data['password']);
-            $user->setLastname($data['lastname']);
-            $user->setFirstname($data['firstname']);
-            $user->setAddress($data['address']);
-            $user->setCity($data['city']);
-            $user->setPostalCode($data['postalCode']);
-            $user->setPhone($data['phone']);
-            $user->setNameAsso($data['nameAsso']);
-            $user->setSiret($data['siret']);
-            $user->setWebsite($data['website']);
-            $user->setImage($data['image']);
+            $user->setEmail(htmlspecialchars($data['email']));
+            $user->setPassword(htmlspecialchars($data['password']));
+            $user->setLastname(htmlspecialchars($data['lastname']));
+            $user->setFirstname(htmlspecialchars($data['firstname']));
+            $user->setAddress(htmlspecialchars($data['address']));
+            $user->setCity(htmlspecialchars($data['city']));
+            $user->setPostalCode(htmlspecialchars($data['postalCode']));
+            $user->setPhone(htmlspecialchars($data['phone']));
+            $user->setNameAsso(htmlspecialchars($data['nameAsso']));
+            $user->setSiret(htmlspecialchars($data['siret']));
+            $user->setWebsite(htmlspecialchars($data['website']));
+            $user->setImage(htmlspecialchars($data['image']));
             $user->setRoles($user->getRoles());
             $user->setRegisterDate(new DateTime(date("Y-m-d")));
             $user->setGdpr(new DateTime(date("Y-m-d")));   
@@ -197,11 +212,10 @@ class UserController extends AbstractController
         $entityManager->flush();
 
         return new JsonResponse([
-            'message' => 'Association enregistrée',
+            'message' => 'Association enregistrée avec succès',
             'user' => [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
-                'password' => $user->getPassword(),
                 'lastname' => $user->getLastname(),
                 'firstname' => $user->getFirstname(),
                 'address' => $user->getAddress(),
@@ -209,17 +223,19 @@ class UserController extends AbstractController
                 'postalCode' => $user->getPostalCode(),
                 'phone' => $user->getPhone(),
                 'nameAsso' => $user->getNameAsso(),
-                'siret' => $user->getSiret(),
                 'website' => $user->getWebsite(),
                 'image' => $user->getImage(),
                 'roles' => $user->getRoles(),
-                'register_date' => $user->getRegisterDate(),
-                'gdpr' => $user->getGdpr()
+                'register_date' => $user->getRegisterDate()->format('d-m-Y'),
+                'gdpr' => $user->getGdpr()->format('d-m-Y')
             ]
         ], JsonResponse::HTTP_CREATED);
       
     }
 
+    /**
+     * permet de se connecter
+     */
     #[Route('/login', name: '_login', methods: ['POST'])]
     public function login(
         Request $request, 
@@ -231,10 +247,9 @@ class UserController extends AbstractController
         if (!isset($data['email']) || !isset($data['password'])) {
             return new JsonResponse(['message' => 'Données manquantes'], JsonResponse::HTTP_BAD_REQUEST);
         }
-        $email=($data['email']);
-        $password=($data['password']);
+        $email=(htmlspecialchars($data['email']));
+        $password=(htmlspecialchars($data['password']));
 
-        
         $user = $entityManager->getRepository(User::class)->findOneBy(["email" => $email]);
 
         if (!($user) || !$hashedPassword->isPasswordValid($user, $password)) {
@@ -261,14 +276,18 @@ class UserController extends AbstractController
         ], JsonResponse::HTTP_OK);
     }
 
-    
+   /**
+     * permet de se déconnecter
+     */ 
     #[Route('/logout', name: '_logout', methods: ['POST'])]
     public function logout(): JsonResponse
     {
         return new JsonResponse(['message' => 'Vous êtes déconnecté'], JsonResponse::HTTP_OK);
     }
     
-
+    /**
+     * permet de supprimer un utilisateur ainsi que ses informations
+     */
     #[Route('/{id}/delete', name: '_delete', methods: ['DELETE'])]
     public function deleteUser(UserRepository $userRepository, EntityManagerInterface $entityManager, int $id): JsonResponse
     {
@@ -278,7 +297,10 @@ class UserController extends AbstractController
 
         return new JsonResponse(['message' => 'Association supprimée avec succès'], 200, [], true);
     }
-    
+
+    /**
+     * permet de récupérer tous les animaux que possède une association
+     */
     #[Route('/{id}/home/asso/pets', name: '_home_asso_pets', methods: ['GET'])]
     public function getPetsByAsso(UserRepository $userRepository, SerializerInterface $serializer, int $id): JsonResponse
     {

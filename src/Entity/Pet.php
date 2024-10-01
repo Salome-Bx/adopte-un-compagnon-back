@@ -91,6 +91,7 @@ class Pet
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
+    #[Groups(['api_pets'])]
     #[ORM\ManyToOne(inversedBy: 'pets')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Species $species = null;
@@ -103,7 +104,7 @@ class Pet
     #[ORM\OneToMany(targetEntity: Form::class, mappedBy: 'pet')]
     private Collection $form;
     
-    #[Groups(['api_pet_id'])]
+    #[Groups(['api_pet_id', 'api_pets'])]
     #[ORM\ManyToOne(inversedBy: 'pet')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $asso = null;
