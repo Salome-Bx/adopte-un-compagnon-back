@@ -16,6 +16,7 @@ Les futurs adoptants peuvent parcourir le site, consulter les profils des animau
 Enfin l'admin du site à son propre backoffice afin de gérer les utilisateurs.
 
 
+
 ### Pré-requis ?
 
     Symfony 7.1.4
@@ -100,6 +101,7 @@ Enfin l'admin du site à son propre backoffice afin de gérer les utilisateurs.
 9. Installer l'application FileZilla et se connecter sur le serveur O2Switch en utilisant ses identifiants.
 
 10. Téleverser les fichiers sur le serveur dans le fichier dédié au site.
+
 
 
 
