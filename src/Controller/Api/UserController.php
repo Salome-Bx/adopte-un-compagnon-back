@@ -187,13 +187,14 @@ class UserController extends AbstractController
             $user->setRegisterDate(new DateTime(date("Y-m-d")));
             $user->setGdpr(new DateTime(date("Y-m-d")));   
         }
-        
+
         $userExist = $entityManager->getRepository(User::class)->findOneBy(["email" => $data['email']]);
 
         if ($userExist) {
             $errorMessages = [];
             return new JsonResponse(['message' => 'Email déjà utilisé', 'errors' => $errorMessages], JsonResponse::HTTP_UNAUTHORIZED);
         }
+
 
         $errors = $validator->validate($user);
         if (count($errors) > 0) {

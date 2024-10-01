@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Pet;
 use App\Entity\Species;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -43,11 +44,12 @@ class PetRepository extends ServiceEntityRepository
 //    }
 
     public function findBySOS(): array 
-        {
-            $pets = new Pet;
-            $pets = $this->findBy(["sos" => 1]);
-            return $pets;
-        
+
+    {
+        $pets= new Pet;
+        $pets = $this->findBy(["sos" => 1]);
+        return $pets;
+
         }
 
 
@@ -63,8 +65,15 @@ class PetRepository extends ServiceEntityRepository
 
         }
 
-        
-    
+    //     $queryBuilder = $em->createQueryBuilder();
+    //     $queryBuilder->select('p')
+    //         ->from(Pet::class, 'p')
+    //         ->join('p.asso_id', 'a')
+    //         ->where('a.id = :assoId')
+    //         ->setParameter('assoId', $assoId);
 
+    //     return $queryBuilder->getQuery()->getResult();
     // }
+
+    
 }
