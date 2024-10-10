@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PetRepository::class)]
 class Pet
@@ -15,49 +16,49 @@ class Pet
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['api_pets', 'api_home_asso_pets', 'api_pet_edit', 'api_home_asso_forms'])]
+    #[Groups(['api_pets', 'api_home_asso_pets', 'api_pet_edit', 'api_home_asso_forms', 'api_pet_new','api_pet_filter'])]
     private ?int $id = null;
 
 
 
-    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit', 'api_home_asso_forms'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit', 'api_home_asso_forms','api_pet_filter'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
 
-    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $birthyear = null;
 
 
-    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column(length: 255)]
     private ?string $gender = null;
 
-
-    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Assert\Length(min: 30, minMessage:"Le message doit faire au minimum 30 caractères.", max: 255 , maxMessage:"Le titre doit faire au plus 255 caractères")]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit', 'api_pet_filter'])]
     #[ORM\Column(length: 255)]
     private ?string $quickDescription = null;
 
-    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit', 'api_pet_filter'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
     
     
-    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column]
     private ?bool $getAlongCats = null;
 
     
    
-    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column]
     private ?bool $getAlongDogs = null;
 
     
    
-    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column]
     private ?bool $getAlongChildren = null;
 
@@ -75,19 +76,19 @@ class Pet
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updateDate = null;
     
-    #[Groups(['api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit', 'api_pet_filter'])]
     #[ORM\Column]
     private ?bool $sos = null;
 
-    #[Groups(['api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit', 'api_pet_filter'])]
     #[ORM\Column(length: 255)]
     private ?string $race = null;
 
-    #[Groups(['api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $categorisedDog = null;
 
-    #[Groups(['api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit'])]
+    #[Groups(['api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
@@ -104,7 +105,7 @@ class Pet
     #[ORM\OneToMany(targetEntity: Form::class, mappedBy: 'pet')]
     private Collection $form;
     
-    #[Groups(['api_pet_id', 'api_pets'])]
+    #[Groups(['api_pet_id', 'api_pets', 'api_pet_filter'])]
     #[ORM\ManyToOne(inversedBy: 'pet')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $asso = null;

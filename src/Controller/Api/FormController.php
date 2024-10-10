@@ -18,9 +18,13 @@ use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 
 
+
 #[Route('api/form', name: 'api_form')]
 class FormController extends AbstractController
 {
+    /**
+     * permet d'afficher tous les formulaires
+     */
     #[Route('s', name: '_all', methods: ['GET'])]
     public function getAllForms(FormRepository $formRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -29,12 +33,14 @@ class FormController extends AbstractController
         return new JsonResponse($data, 200, [], true);
     }
 
+    /**
+     * permet de créer un formulaire
+     */
     #[Route('/new', name: '_new', methods: ['POST'])]
     public function newForm(
         Request $request, 
         ValidatorInterface $validator, 
         EntityManagerInterface $entityManager, 
-        FormRepository $formRepository, 
         SerializerInterface $serializer,
         PetRepository $petRepository,
         ): JsonResponse
@@ -81,6 +87,9 @@ class FormController extends AbstractController
 
     }
 
+    /**
+     * permet d'afficher les formulaires concernant une association
+     */
     #[Route('/{id}/home/asso/forms', name: '_home_asso_forms', methods: ['GET'])]
     public function getFormsByAsso(UserRepository $userRepository, PetRepository $petRepository, Pet $pet, SerializerInterface $serializer, int $id): JsonResponse
     {

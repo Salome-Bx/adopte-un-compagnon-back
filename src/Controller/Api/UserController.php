@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -33,12 +34,20 @@ class UserController extends AbstractController
     /**
      * permet de récupérer un utilisateur par son id
      */
-    #[Route('/{id}', name: '_id', methods: ['GET'])]
+    #[Route('/informations/{id}', name: '_informations', methods: ['GET'])]
     public function userById(UserRepository $userRepository, SerializerInterface $serializer, int $id): JsonResponse
     {
-        $data = $userRepository->find($id);
-        return $this->json($data, context: ['groups' => 'api_user_id']);
+        $user = $userRepository->findOneBy(["id" => $id]);
+        
+        $data = $serializer->serialize($user, 'json', ['groups' => 'api_user_id']);
+        
+    
+        return new JsonResponse($data, 200, [], true);
+
     }
+
+    
+
 
     /**
      * permet de modifier les informations d'un utilisateur grâce à son id
@@ -222,6 +231,7 @@ class UserController extends AbstractController
                 'postalCode' => $user->getPostalCode(),
                 'phone' => $user->getPhone(),
                 'nameAsso' => $user->getNameAsso(),
+                'siret' => $user->getSiret(),
                 'website' => $user->getWebsite(),
                 'image' => $user->getImage(),
                 'roles' => $user->getRoles(),
@@ -263,11 +273,14 @@ class UserController extends AbstractController
             'user' => [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
+                'lastname' => $user->getLastname(),
+                'firstname' => $user->getFirstname(),
                 'address' => $user->getAddress(),
                 'city' => $user->getCity(),
                 'postalCode' => $user->getPostalCode(),
                 'phone' => $user->getPhone(),
                 'nameAsso' => $user->getNameAsso(),
+                'siret' => $user->getSiret(),
                 'website' => $user->getWebsite(),
                 'image' => $user->getImage(),
                 'roles' => $user->getRoles(),
@@ -294,8 +307,10 @@ class UserController extends AbstractController
         $entityManager->remove($user);
         $entityManager->flush();
 
-        return new JsonResponse(['message' => 'Association supprimée avec succès'], 200, [], true);
+        return new JsonResponse(['message' => 'Association supprimée avec succès'], 200);
     }
+
+ 
 
     /**
      * permet de récupérer tous les animaux que possède une association
@@ -309,6 +324,26 @@ class UserController extends AbstractController
         
         return new JsonResponse($data, 200, [], true);
     }
+
+    /**
+     * permet de rechercher un animal par code postal de l'association
+     * search a pet by association's postal code
+     */
+    #[Route('/filter/{postalCode}', name: '_postal_filter', methods: ['GET'])]
+    public function searchByPostalCode(Request $request, UserRepository $userRepository, SerializerInterface $serializer, int $postalCode): JsonResponse
+    {
+
+        $pets = $userRepository->findByAssociationPostalCode($postalCode);
+        $pets = $serializer->serialize($pets, 'json', ['groups' => ['api_pet_filter']]);
+
+        return new JsonResponse([
+            'message' => 'Recherche effectuée',
+            'pets' => json_decode($pets),
+            'postalCode' => $postalCode,
+        ], 200);
+    }
+
+
     
     
 }

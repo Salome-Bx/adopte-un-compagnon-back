@@ -16,18 +16,21 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    #[Groups(['api_user_id', 'api_users'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['api_user_edit'])]
+    #[Groups(['api_user_edit', 'api_user_id'])]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
+
+    #[Groups(['api_users'])]
     #[ORM\Column]
     private array $roles = [];
 
@@ -37,12 +40,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     
     #[ORM\Column]
     private ?string $password = null;
-
-    #[Groups(['api_user_edit'])]
+    #[Groups(['api_user_edit', 'api_user_id'])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
-    #[Groups(['api_user_edit'])]
+    #[Groups(['api_user_edit','api_user_id'])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
@@ -54,7 +56,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $city = null;
 
-    #[Groups(['api_users', 'api_user_id', 'api_pet_id','api_user_edit', 'api_pets'])]
+    #[Groups(['api_users', 'api_user_id', 'api_pet_id','api_user_edit', 'api_pets', 'api_pet_filter'])]
     #[ORM\Column(length: 5, nullable: true)]
     private ?string $postalCode = null;
 
@@ -70,11 +72,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nameAsso = null;
 
-    #[Groups(['api_users', 'api_user_id','api_user_edit'])]
+    #[Groups(['api_user_id','api_user_edit'])]
     #[ORM\Column(length: 14, nullable: true)]
     private ?string $siret = null;
 
-    #[Groups(['api_users', 'api_user_id','api_user_edit'])]
+    #[Groups(['api_user_id','api_user_edit'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $gdpr = null;
 
@@ -85,6 +87,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Pet>
      */
+    #[Groups(['api_pet_filter'])]
     #[ORM\OneToMany(targetEntity: Pet::class, mappedBy: 'asso', orphanRemoval: true)]
     private Collection $pet;
     
