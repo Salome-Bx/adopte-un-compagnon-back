@@ -3,8 +3,6 @@
 namespace App\Controller\Api;
 
 use App\Entity\Pet;
-use App\Entity\Species;
-use App\Entity\User;
 use App\Repository\PetRepository;
 use App\Repository\SpeciesRepository;
 use App\Repository\UserRepository;
@@ -30,6 +28,10 @@ class PetController extends AbstractController
         $this->logger = $logger;
     }
 
+    /**
+     * permet d'afficher tous les animaux qui sont en SOS
+     * display all SOS'animals
+     */
     #[Route('/sos', name: '_sos', methods: ['GET'])]
     public function AllSos(PetRepository $petRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -38,23 +40,22 @@ class PetController extends AbstractController
         return new JsonResponse($data, 200, [], true);
     }
 
+    /**
+     * permet d'afficher le profil d'un animal 
+     * display animal's profil
+     */
     #[Route('/{id}', name: '_id', methods: ['GET'])]
-    public function petById(PetRepository $petRepository, SerializerInterface $serializer, int $id): JsonResponse 
+    public function petById(PetRepository $petRepository, SerializerInterface $serializer, int $id, UserRepository $userRepository): JsonResponse 
     {
         $data = $petRepository->find($id);
         return $this->json($data, context: ['groups' => 'api_pet_id']);
     }
 
 
-
-    #[Route('/{id}', name: '_id', methods: ['GET'])]
-    public function petById(PetRepository $petRepository, SerializerInterface $serializer, int $id): JsonResponse 
-    {
-        $data = $petRepository->find($id);
-        return $this->json($data, context: ['groups' => 'api_pet_id']);
-    }
-
-
+    /**
+     * permet d'afficher tous les animaux
+     * display all the animals
+     */
 
     #[Route('s', name: '_all', methods: ['GET'])]
     public function index(PetRepository $petRepository, SerializerInterface $serializer): JsonResponse
@@ -64,7 +65,10 @@ class PetController extends AbstractController
         return new JsonResponse($data, 200, [], true);
     }
 
-
+    /**
+     * permet de créer un animal
+     * create an animal
+     */
     #[Route('/new', name: '_new', methods: ['POST'])]
     public function createPet(
         Request $request, 
@@ -94,7 +98,6 @@ class PetController extends AbstractController
         $pet->setSpecies($speciesRepository->findOneBy(array("id" => $data['species_id'])));
         $pet->setAsso($userRepository->findOneBy(array("id" => $data['asso_id'])));
 
-    
 
         $errors = $validator->validate($pet);
         if (count($errors) > 0) {
@@ -108,43 +111,35 @@ class PetController extends AbstractController
         $entityManager->persist($pet);
         $entityManager->flush();
 
+        $pet = $serializer->serialize($pet, 'json', ['groups' => 'api_pet_new']);
+
         return new JsonResponse([
             'message' => 'Animal crée avec succès',
-            'pet' => [
-                'id' => $pet->getId(),
-                'name' => $pet->getName(),
-                'birthyear' => $pet->getBirthyear(),
-                'gender' => $pet->getGender(),
-                'quick_description' => $pet->getQuickDescription(),
-                'description' => $pet->getDescription(),
-                'get_along_cats' => $pet->isGetAlongCats(),
-                'get_along_dogs' => $pet->isGetAlongDogs(),
-                'get_along_children' => $pet->isGetAlongChildren(),
-                'entry_date' => $pet->getEntryDate(),
-                'sos' => $pet->isSos(),
-                'race' => $pet->getRace(),
-                'categorised_dog' => $pet->getCategorisedDog(),
-                'image' => $pet->getImage(),
-                'register_date' => $pet->getRegisterDate(),
-                'update_date' => $pet->getUpdateDate(), 
-            ]
+            'pet' => json_decode($pet, true),
+            
         ], JsonResponse::HTTP_CREATED);
 
 
     }
 
+    /**
+     * permet d'éditer un animal
+     * edit an animal
+     */
     #[Route('/{id}/edit', name: '_edit', methods: ['PUT'])]
     public function editPet(
         Request $request,
         Pet $pet,
+        PetRepository $petRepository,
         SerializerInterface $serializer, 
         EntityManagerInterface $entityManager,
         SpeciesRepository $speciesRepository,
         UserRepository $userRepository,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        int $id
         ): JsonResponse
     {
-        
+        $data = $petRepository->find($id);
         $data = json_decode($request->getContent(), true);
 
         if (isset($data['name'])) {
@@ -215,6 +210,7 @@ class PetController extends AbstractController
         return new JsonResponse([
             'message' => 'Animal modifié avec succès',
             'pet' => [
+                'id' => $pet->getId(),
                 'name' => $pet->getName(),
                 'birthyear' => $pet->getBirthyear(),
                 'gender' => $pet->getGender(),
@@ -229,30 +225,19 @@ class PetController extends AbstractController
                 'categorised_dog' => $pet->getCategorisedDog(),
                 'image' => $pet->getImage(),
                 'register_date' => $pet->getRegisterDate(),
-                'update_date' => $pet->getUpdateDate(),   
-            ]
+                'update_date' => $pet->getUpdateDate(),
+                'asso_id' => $pet->getAsso()
+            ],
+            'context' => ['groups' => 'api_pet_edit']
         ], JsonResponse::HTTP_CREATED);
 
     }
     
 
-        // #[Route('/account/pets', name: '_account', methods: ['GET'])]
-    // public function getPetsByAsso(PetRepository $petRepository, SerializerInterface $serializer): JsonResponse
-    // {
-    //     try {
-    //         $pets = $petRepository->findAllPetsByAsso($id);
-    //         $data = $serializer->serialize($pets, 'json', ['groups' => 'api_pets_account_pets']);
-    //         return new JsonResponse($data, 200, [], true);
-
-    //     } catch (\Exception $e) {
-    //         return $this->json([
-    //             'error' => 'Une erreur est survenue lors de la récupération des animaux.',
-    //             'details' => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
-
+    /**
+     * permet de supprimer un animal
+     * delete an animal
+     */
     #[Route('/{id}/delete', name: '_pet_delete', methods: ['DELETE'])]
     public function deletePet(PetRepository $petRepository, EntityManagerInterface $entityManager, int $id): JsonResponse
     {
@@ -260,7 +245,10 @@ class PetController extends AbstractController
         $entityManager->remove($pet);
         $entityManager->flush();
 
-        return new JsonResponse(['message' => 'Animal supprimé avec succès'], 200, [], true);
+
+        return new JsonResponse(['message' => 'Animal supprimé avec succès'], 200);
 
     }
+
+    
 }
