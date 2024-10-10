@@ -21,14 +21,17 @@ class Pet
 
 
 
+
     #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit', 'api_home_asso_forms','api_pet_filter'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
 
+
     #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $birthyear = null;
+
 
 
     #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
@@ -46,18 +49,21 @@ class Pet
 
     
     
+
     #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column]
     private ?bool $getAlongCats = null;
 
     
    
+
     #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column]
     private ?bool $getAlongDogs = null;
 
     
    
+
     #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column]
     private ?bool $getAlongChildren = null;
@@ -76,6 +82,7 @@ class Pet
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updateDate = null;
     
+
     #[Groups(['api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit', 'api_pet_filter'])]
     #[ORM\Column]
     private ?bool $sos = null;
@@ -87,6 +94,7 @@ class Pet
     #[Groups(['api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $categorisedDog = null;
+
 
     #[Groups(['api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit','api_pet_filter'])]
     #[ORM\Column(length: 255)]

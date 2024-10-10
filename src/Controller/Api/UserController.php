@@ -204,6 +204,7 @@ class UserController extends AbstractController
             return new JsonResponse(['message' => 'Email déjà utilisé', 'errors' => $errorMessages], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
+
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
             $errorMessages = [];
@@ -239,6 +240,7 @@ class UserController extends AbstractController
                 'gdpr' => $user->getGdpr()->format('d-m-Y')
             ]
         ], JsonResponse::HTTP_CREATED);
+
       
     }
 
@@ -270,6 +272,8 @@ class UserController extends AbstractController
         return new JsonResponse([
             'message' => 'Connexion réussie',
             'token' => $token,
+    }
+
             'user' => [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
@@ -288,9 +292,11 @@ class UserController extends AbstractController
         ], JsonResponse::HTTP_OK);
     }
 
+
    /**
      * permet de se déconnecter
      */ 
+
     #[Route('/logout', name: '_logout', methods: ['POST'])]
     public function logout(): JsonResponse
     {
@@ -309,6 +315,7 @@ class UserController extends AbstractController
 
         return new JsonResponse(['message' => 'Association supprimée avec succès'], 200);
     }
+
 
  
 
@@ -345,6 +352,7 @@ class UserController extends AbstractController
 
 
     
+
     
 }
 

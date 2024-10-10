@@ -7,6 +7,7 @@ use App\Repository\PetRepository;
 use App\Repository\SpeciesRepository;
 use App\Repository\UserRepository;
 use DateTime;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -55,6 +56,7 @@ class PetController extends AbstractController
      * permet d'afficher tous les animaux
      * display all the animals
      */
+
     #[Route('s', name: '_all', methods: ['GET'])]
     public function index(PetRepository $petRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -243,7 +245,9 @@ class PetController extends AbstractController
         $entityManager->remove($pet);
         $entityManager->flush();
 
+
         return new JsonResponse(['message' => 'Animal supprimé avec succès'], 200);
+
     }
 
     
