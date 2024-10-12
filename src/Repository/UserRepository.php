@@ -57,4 +57,20 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+
+
+/**
+     * permet de rechercher un animal par code postal de l'association
+     * search a pet by association's postal code
+     */
+     public function findByAssociationPostalCode(string $postalCode): array
+        {
+            $qb = $this->createQueryBuilder('u')
+                ->where('u.postalCode LIKE :postalCode') 
+                ->setParameter('postalCode', $postalCode . '%');
+
+            return $qb->getQuery()->getResult();
+        }
+
 }
