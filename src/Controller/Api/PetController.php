@@ -7,6 +7,7 @@ use App\Repository\PetRepository;
 use App\Repository\SpeciesRepository;
 use App\Repository\UserRepository;
 use DateTime;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,6 +50,7 @@ class PetController extends AbstractController
         $data = $petRepository->find($id);
         return $this->json($data, context: ['groups' => 'api_pet_id']);
     }
+
 
 
     /**
@@ -243,8 +245,9 @@ class PetController extends AbstractController
         $pet = $petRepository->find($id);
         $entityManager->remove($pet);
         $entityManager->flush();
-
+      
         return new JsonResponse(['message' => 'Animal supprimé avec succès'], 200);
+
     }
 
     

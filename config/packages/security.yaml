@@ -33,6 +33,7 @@ security:
          - { path: ^/api/form/new, roles: PUBLIC_ACCESS }
          
 
+
 when@test:
     security:
         password_hashers:
