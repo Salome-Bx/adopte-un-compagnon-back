@@ -31,7 +31,7 @@ security:
     access_control:
 
          - { path: ^/api/form/new, roles: PUBLIC_ACCESS }
-         - { path: ^/api/creationAnimal, roles: IS_AUTHENTICATED_FULLY }
+         
 
 when@test:
     security:

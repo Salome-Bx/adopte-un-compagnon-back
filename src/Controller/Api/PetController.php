@@ -77,6 +77,7 @@ class PetController extends AbstractController
         UserRepository $userRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
+        
         $pet = new Pet();
         $pet->setName($data['name']);
         $pet->setBirthyear(new DateTime(date("Y")));

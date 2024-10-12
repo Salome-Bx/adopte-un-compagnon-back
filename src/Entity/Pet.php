@@ -35,11 +35,12 @@ class Pet
     #[ORM\Column(length: 255)]
     private ?string $gender = null;
 
-    #[Assert\Length(min: 30, minMessage:"Le message doit faire au minimum 30 caractères.", max: 255 , maxMessage:"Le titre doit faire au plus 255 caractères")]
+    #[Assert\Length(min: 30, minMessage:"Le message doit faire au minimum 30 caractères.", max: 120 , maxMessage:"Le message doit faire au plus 120 caractères.")]
     #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit', 'api_pet_filter'])]
     #[ORM\Column(length: 255)]
     private ?string $quickDescription = null;
 
+    #[Assert\Length(min: 30, minMessage:"Le message doit faire au minimum 30 caractères.", max: 255 , maxMessage:"Le message doit faire au plus 255 caractères.")]
     #[Groups(['api_pet_sos', 'api_pets', 'api_pet_id', 'api_pet_new', 'api_home_asso_pets', 'api_pet_edit', 'api_pet_filter'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
