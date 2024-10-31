@@ -69,7 +69,7 @@ Enfin l'admin du site à son propre backoffice afin de gérer les utilisateurs.
 
 1. Créer un dossier dédiée à la PROD.
 
-2. Modifier le fichier nelmio_cors.yaml et mettre l'url du site front dans les CORS./////
+2. Modifier le fichier nelmio_cors.yaml et mettre l'url du site front dans les CORS.
 
 3. Mettre les informations de connexion à la BDD dans le fichier .env.
 
